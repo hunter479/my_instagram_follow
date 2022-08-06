@@ -6,6 +6,7 @@ import (
 	"my_instagram_follow/src/instagram"
 	"my_instagram_follow/src/myexport"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -23,15 +24,29 @@ func initDirectory() {
 }
 
 func core(cookie string) {
-	initDirectory()
+	var wg sync.WaitGroup = sync.WaitGroup{}
 	var path string = fmt.Sprintf("record/%s", time.Now().Format("2006-01-02"))
 
-	followers_list := instagram.GetFollowers(cookie)
-	following_list := instagram.GetFollowing(cookie)
-	followers_json, _ := json.MarshalIndent(followers_list, "", "    ")
-	following_json, _ := json.MarshalIndent(following_list, "", "    ")
-	myexport.MyWriteToFileJson(path+"/followers.json", followers_json)
-	myexport.MyWriteToFileJson(path+"/following.json", following_json)
+	initDirectory()
+	wg.Add(2)
+	go func() {
+		fmt.Println("[ ] Fetching followers list")
+		followers_list := instagram.GetFollowers(cookie)
+		followers_json, _ := json.MarshalIndent(followers_list, "", "    ")
+		myexport.MyWriteToFileJson(path+"/followers.json", followers_json)
+		fmt.Println("[X] Followers list done!")
+		defer wg.Done()
+
+	}()
+	go func() {
+		fmt.Println("[ ] Fetching following list")
+		following_list := instagram.GetFollowing(cookie)
+		following_json, _ := json.MarshalIndent(following_list, "", "    ")
+		myexport.MyWriteToFileJson(path+"/following.json", following_json)
+		fmt.Println("[X] Following list done!")
+		defer wg.Done()
+	}()
+	wg.Wait()
 }
 
 func main() {
