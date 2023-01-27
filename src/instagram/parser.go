@@ -1,30 +1,27 @@
 package instagram
 
 import (
-	"encoding/json"
-	"strconv"
+	"log"
+	"strings"
 )
 
-type Profile struct {
-	Pk       int
-	Username string
-}
+func ParseUser(result []profile) map[string]profile {
+	var parse map[string]profile = make(map[string]profile)
 
-type List_Users struct {
-	Users []Profile
-}
-
-func ParseResponse(obj []byte) map[string]Profile {
-	var result List_Users
-	var err error = json.Unmarshal(obj, &result)
-	var parse map[string]Profile = make(map[string]Profile)
-
-	if err != nil {
-		panic(err)
-	}
-	for i := range result.Users {
-		parse[strconv.Itoa(result.Users[i].Pk)] = result.Users[i]
+	for i := range result {
+		parse[result[i].Pk_id] = result[i]
 	}
 
 	return parse
+}
+
+func ExtractUserIdFromCookie(cookie string) string {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Fatal("Could not parse cookie")
+		}
+	}()
+
+	return strings.Split(cookie, "%")[0]
 }

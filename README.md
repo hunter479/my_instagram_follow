@@ -1,5 +1,6 @@
 # my_instagram_follow
-A simple learning project done in golang to get the list of people who are following you and the people you follow.
+A simple learning project done in golang to scrap instagram profile.
+Because of Instagram's limit, follows and followed_by lists are limited by default.
 
 ## Requirements
 Golang is required | https://go.dev/doc/install
@@ -27,7 +28,10 @@ go build .
 ```
 ./my_instagram_follow <sessionid_cookie>
 ```
-The lists will be saved in the directory "record/{todays_date}"
+The lists will be saved in the directory "record/{username}/{todays_date}"
+
+## Legal Disclaimer
+The use is the responsibility of the end user. Developers assume no liability and are not responsible for any misuse or damage caused.
 
 ## To do
 - Creation of a function to compare the differences in time between the records
